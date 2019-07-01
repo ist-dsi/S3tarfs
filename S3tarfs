@@ -1,9 +1,11 @@
 #!/usr/bin/python3
 
 import argparse
+import tempfile
+import os
 
 parser = argparse.ArgumentParser()
-group_action = parser.add_mutually_exclusive_group()
+group_action = parser.add_mutually_exclusive_group(required=True)
 group_action.add_argument("-c", "--create", action="store_true",
                           help="create archive")
 group_action.add_argument("-x", "-extract", action="store_true",
@@ -29,9 +31,35 @@ parser.add_argument("bucket",
 args = parser.parse_args()
 verbosity=args.verbose
 print(args.verbose)
+print(args.file)
 print(args.access_key)
 print(args.secret_key)
 print(args.host)
 print(args.files_from)
-print(args.file)
 print(args.bucket)
+
+if args.file is None:
+    print("Not supported yet")
+    exit(1)
+
+# mktemp -d
+tmpdir = tempfile.mkdtemp()
+print(tmpdir)
+
+# s3fs s3fuse:/ /root/S3 -o passwd_file=/root/.passwd-s3fs
+
+s3fs_args = ''+args.bucket+' '+tmpdir+' '
+if args.host is not None:
+    s3fs_args = s3fs_args+' -o url='+args.host
+
+print('s3fs '+s3fs_args)
+os.system('s3fs '+s3fs_args)
+
+if args.create is True:
+    print('tar -c -f "'+args.file+'" -C "'+tmpdir+'" . ')
+    os.system('tar -c -f "'+args.file+'" -C "'+tmpdir+'" . ')
+
+# umount /root/S3
+os.system('umount '+tmpdir)
+
+os.rmdir(tmpdir)
