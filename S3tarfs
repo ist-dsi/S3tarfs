@@ -14,7 +14,7 @@ group_action.add_argument("-t", "--list", action="store_true",
                           help="list contents of archive")
 parser.add_argument("-v", "--verbose", action="count", default=0,
                     help="increase output verbosity")
-parser.add_argument("-f", "--file",
+parser.add_argument("-f", "--file", default='-',
                     help="name file of the archive")
 parser.add_argument("--host",
                     help="URL of S3 gateway to connect to")
