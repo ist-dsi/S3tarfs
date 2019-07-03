@@ -55,6 +55,11 @@ s3fs_args = ''+args.bucket+' '+tmpdir+' '
 if args.host is not None:
     s3fs_args = s3fs_args+' -o url='+args.host
 
+verbosity=''
+for i in range(args.verbose):
+    verbosity = verbosity+' -v'
+print(verbosity)
+
 s3fs_files = ''
 for f in args.files:
     s3fs_files = s3fs_files+' '+f
@@ -65,16 +70,16 @@ os.system('s3fs '+s3fs_args)
 os.chdir(tmpdir)
 
 if args.create is True:
-    # print('tar -c -f "'+args.file+'" '+s3fs_files)
-    os.system('tar -c -f "'+args.file+'" '+s3fs_files)
+    # print('tar -c -f "'+args.file+'" '+s3fs_files+verbosity)
+    os.system('tar -c -f "'+args.file+'" '+s3fs_files+verbosity)
 
 if args.extract is True:
-    # print('tar -x -f "'+args.file+'" '+s3fs_files)
-    os.system('tar -x -f "'+args.file+'" '+s3fs_files)
+    # print('tar -x -f "'+args.file+'" '+s3fs_files+verbosity)
+    os.system('tar -x -f "'+args.file+'" '+s3fs_files+verbosity)
 
 if args.list is True:
-    # print('tar -t -f "'+args.file+'" '+s3fs_files)
-    os.system('tar -t -f "'+args.file+'" '+s3fs_files)
+    # print('tar -t -f "'+args.file+'" '+s3fs_files+verbosity)
+    os.system('tar -t -f "'+args.file+'" '+s3fs_files+verbosity)
 
 # umount /root/S3
 os.chdir('/')
