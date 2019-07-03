@@ -28,6 +28,8 @@ parser.add_argument("--null", action="store_true",
                     help="list of files is null terminated, goot for find --print0")
 parser.add_argument("bucket",
                     help="S3 bucket to process")
+parser.add_argument("files", nargs='*',
+                    help="Files to proccess")
 args = parser.parse_args()
 verbosity=args.verbose
 print(args.verbose)
@@ -37,6 +39,7 @@ print(args.secret_key)
 print(args.host)
 print(args.files_from)
 print(args.bucket)
+print(args.files)
 
 if args.file is None:
     print("Not supported yet")
@@ -52,14 +55,29 @@ s3fs_args = ''+args.bucket+' '+tmpdir+' '
 if args.host is not None:
     s3fs_args = s3fs_args+' -o url='+args.host
 
+s3fs_files = ''
+for f in args.files:
+    s3fs_files = s3fs_files+' '+f
+
 print('s3fs '+s3fs_args)
 os.system('s3fs '+s3fs_args)
 
+os.chdir(tmpdir)
+
 if args.create is True:
-    print('tar -c -f "'+args.file+'" -C "'+tmpdir+'" . ')
-    os.system('tar -c -f "'+args.file+'" -C "'+tmpdir+'" . ')
+    print('tar -c -f "'+args.file+'" '+s3fs_files)
+    os.system('tar -c -f "'+args.file+'" '+s3fs_files)
+
+if args.extract is True:
+    print('tar -x -f "'+args.file+'" '+s3fs_files)
+    os.system('tar -x -f "'+args.file+'" '+s3fs_files)
+
+if args.list is True:
+    print('tar -t -f "'+args.file+'" '+s3fs_files)
+    os.system('tar -t -f "'+args.file+'" '+s3fs_files)
 
 # umount /root/S3
+os.chdir('/')
 os.system('umount '+tmpdir)
 
 os.rmdir(tmpdir)
