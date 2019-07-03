@@ -8,7 +8,7 @@ parser = argparse.ArgumentParser()
 group_action = parser.add_mutually_exclusive_group(required=True)
 group_action.add_argument("-c", "--create", action="store_true",
                           help="create archive")
-group_action.add_argument("-x", "-extract", action="store_true",
+group_action.add_argument("-x", "--extract", action="store_true",
                           help="extract archive")
 group_action.add_argument("-t", "--list", action="store_true",
                           help="list contents of archive")
