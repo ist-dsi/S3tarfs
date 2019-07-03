@@ -32,14 +32,14 @@ parser.add_argument("files", nargs='*',
                     help="Files to proccess")
 args = parser.parse_args()
 verbosity=args.verbose
-print(args.verbose)
-print(args.file)
-print(args.access_key)
-print(args.secret_key)
-print(args.host)
-print(args.files_from)
-print(args.bucket)
-print(args.files)
+# print(args.verbose)
+# print(args.file)
+# print(args.access_key)
+# print(args.secret_key)
+# print(args.host)
+# print(args.files_from)
+# print(args.bucket)
+# print(args.files)
 
 if args.file is None:
     print("Not supported yet")
@@ -47,7 +47,7 @@ if args.file is None:
 
 # mktemp -d
 tmpdir = tempfile.mkdtemp()
-print(tmpdir)
+# print(tmpdir)
 
 # s3fs s3fuse:/ /root/S3 -o passwd_file=/root/.passwd-s3fs
 
@@ -59,21 +59,21 @@ s3fs_files = ''
 for f in args.files:
     s3fs_files = s3fs_files+' '+f
 
-print('s3fs '+s3fs_args)
+# print('s3fs '+s3fs_args)
 os.system('s3fs '+s3fs_args)
 
 os.chdir(tmpdir)
 
 if args.create is True:
-    print('tar -c -f "'+args.file+'" '+s3fs_files)
+    # print('tar -c -f "'+args.file+'" '+s3fs_files)
     os.system('tar -c -f "'+args.file+'" '+s3fs_files)
 
 if args.extract is True:
-    print('tar -x -f "'+args.file+'" '+s3fs_files)
+    # print('tar -x -f "'+args.file+'" '+s3fs_files)
     os.system('tar -x -f "'+args.file+'" '+s3fs_files)
 
 if args.list is True:
-    print('tar -t -f "'+args.file+'" '+s3fs_files)
+    # print('tar -t -f "'+args.file+'" '+s3fs_files)
     os.system('tar -t -f "'+args.file+'" '+s3fs_files)
 
 # umount /root/S3
