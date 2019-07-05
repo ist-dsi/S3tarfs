@@ -26,8 +26,22 @@ parser.add_argument("-T", "--files-from",
                     help="list of files to process")
 parser.add_argument("--null", action="store_true",
                     help="list of files is null terminated, goot for find --print0")
-parser.add_argument("bucket",
-                    help="S3 bucket to process")
+parser.add_argument("-C", "--directory",
+                    help="bucket name in format bucket:/path")
+parser.add_argument("--totals", action="store_true",
+                    help="print size of processed files")
+parser.add_argument("--listed-incremental",
+                    help="list of files processed in previous backup, for incremental backups")
+parser.add_argument("--ignore-failed-read", action="store_true",
+                    help="ignore failed reads")
+parser.add_argument("--sparse", action="store_true",
+                    help="detect sparse files")
+parser.add_argument("--block-number", action="store_true",
+                    help="show block numbers with each message")
+parser.add_argument("--atime-preserve",
+                    help="how to preserve atimes")
+parser.add_argument("--one-file-system", action="store_true",
+                    help="ignored, for compability reasons")
 parser.add_argument("files", nargs='*',
                     help="Files to proccess")
 args = parser.parse_args()
@@ -51,7 +65,7 @@ tmpdir = tempfile.mkdtemp()
 
 # s3fs s3fuse:/ /root/S3 -o passwd_file=/root/.passwd-s3fs
 
-s3fs_args = ''+args.bucket+' '+tmpdir+' '
+s3fs_args = ''+args.directory+' '+tmpdir+' '
 if args.host is not None:
     s3fs_args = s3fs_args+' -o url='+args.host
 
