@@ -94,17 +94,28 @@ if args.list is not True:
 
     os.chdir(tmpdir)
 
+
+tar_options = ' '
+if args.block_number is True:
+    tar_options = tar_options + '--block-number '
+
+if args.totals is True:
+    tar_options = tar_options + '--totals '
+    
+if args.listed_incremental is not None:
+    tar_options = tar_options + '--listed-incremental '+args.listed_incremental
+    
 if args.create is True:
-    print('tar -c -f "'+args.file+'" '+tar_files+verbosity, file=sys.stderr)
-    os.system('tar -c -f "'+args.file+'" '+tar_files+verbosity)
+    print('tar -c -f "'+args.file+'" '+verbosity+tar_options+tar_files, file=sys.stderr)
+    os.system('tar -c -f "'+args.file+'" '+verbosity+tar_options+tar_files)
 
 if args.extract is True:
-    print('tar -x -f "'+args.file+'" '+tar_files+verbosity, file=sys.stderr)
-    os.system('tar -x -f "'+args.file+'" '+tar_files+verbosity)
+    print('tar -x -f "'+args.file+'" '+verbosity+tar_options+tar_files, file=sys.stderr)
+    os.system('tar -x -f "'+args.file+'" '+verbosity+tar_options+tar_files)
 
 if args.list is True:
-    print('tar -t -f "'+args.file+'" '+tar_files+verbosity, file=sys.stderr)
-    os.system('tar -t -f "'+args.file+'" '+tar_files+verbosity)
+    print('tar -t -f "'+args.file+'" '+verbosity+tar_options+tar_files, file=sys.stderr)
+    os.system('tar -t -f "'+args.file+'" '+verbosity+tar_options+tar_files)
 
 
 if args.list is not True:
