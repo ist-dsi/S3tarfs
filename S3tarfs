@@ -78,8 +78,8 @@ s3fs_files = ''
 for f in args.files:
     s3fs_files = s3fs_files+' '+f
 
-# print('s3fs '+s3fs_args)
-os.system('s3fs '+s3fs_args)
+print('s3fs '+s3fs_args+' -o dbglevel=info')
+os.system('s3fs '+s3fs_args+' -o dbglevel=info')
 
 os.chdir(tmpdir)
 
