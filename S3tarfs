@@ -84,9 +84,9 @@ for i in range(args.verbose):
     verbosity = verbosity+' -v'
 print(verbosity, file=sys.stderr)
 
-s3fs_files = ''
+tar_files = ''
 for f in args.files:
-    s3fs_files = s3fs_files+' '+f
+    tar_files = tar_files+' '+f
 
 if args.list is not True:
     print('s3fs '+s3fs_args+' -o dbglevel=info', file=sys.stderr)
@@ -95,16 +95,16 @@ if args.list is not True:
     os.chdir(tmpdir)
 
 if args.create is True:
-    print('tar -c -f "'+args.file+'" '+s3fs_files+verbosity, file=sys.stderr)
-    os.system('tar -c -f "'+args.file+'" '+s3fs_files+verbosity)
+    print('tar -c -f "'+args.file+'" '+tar_files+verbosity, file=sys.stderr)
+    os.system('tar -c -f "'+args.file+'" '+tar_files+verbosity)
 
 if args.extract is True:
-    print('tar -x -f "'+args.file+'" '+s3fs_files+verbosity, file=sys.stderr)
-    os.system('tar -x -f "'+args.file+'" '+s3fs_files+verbosity)
+    print('tar -x -f "'+args.file+'" '+tar_files+verbosity, file=sys.stderr)
+    os.system('tar -x -f "'+args.file+'" '+tar_files+verbosity)
 
 if args.list is True:
-    print('tar -t -f "'+args.file+'" '+s3fs_files+verbosity, file=sys.stderr)
-    os.system('tar -t -f "'+args.file+'" '+s3fs_files+verbosity)
+    print('tar -t -f "'+args.file+'" '+tar_files+verbosity, file=sys.stderr)
+    os.system('tar -t -f "'+args.file+'" '+tar_files+verbosity)
 
 
 if args.list is not True:
