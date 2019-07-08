@@ -2,10 +2,11 @@
 
 import argparse
 import tempfile
+import sys
 import os
 
 import s3tarfsrc
-print(s3tarfsrc.host)
+print(s3tarfsrc.host, file=sys.stderr)
 
 parser = argparse.ArgumentParser()
 group_action = parser.add_mutually_exclusive_group(required=True)
@@ -49,26 +50,30 @@ parser.add_argument("files", nargs='*',
                     help="Files to proccess")
 args = parser.parse_args()
 verbosity=args.verbose
-# print(args.verbose)
-# print(args.file)
-# print(args.access_key)
-# print(args.secret_key)
-# print(args.host)
-# print(args.files_from)
-# print(args.bucket)
-# print(args.files)
+print(args.verbose, file=sys.stderr)
+print(args.file, file=sys.stderr)
+print(args.access_key, file=sys.stderr)
+print(args.secret_key, file=sys.stderr)
+print(args.host, file=sys.stderr)
+print(args.files_from, file=sys.stderr)
+print(args.files, file=sys.stderr)
 
 if args.file is None:
-    print("Not supported yet")
+    print("Not supported yet", file=sys.stderr)
     exit(1)
 
-# mktemp -d
 tmpdir = tempfile.mkdtemp()
-# print(tmpdir)
+print(tmpdir, file=sys.stderr)
 
 # s3fs s3fuse:/ /root/S3 -o passwd_file=/root/.passwd-s3fs
 
-s3fs_args = ''+args.directory+' '+tmpdir+' '
+s3fs_args = ''
+if args.list is not True:
+    if args.directory is None:
+        print("option -C bucket:/ is mandatory in -c and -x mode", file=sys.stderr)
+    else:
+        s3fs_args = s3fs_args+args.directory+' '+tmpdir+' '
+    
 if args.host is not None:
     s3fs_args = s3fs_args+' -o url='+args.host
 elif s3tarfsrc.host is not None:
@@ -77,31 +82,33 @@ elif s3tarfsrc.host is not None:
 verbosity=''
 for i in range(args.verbose):
     verbosity = verbosity+' -v'
-print(verbosity)
+print(verbosity, file=sys.stderr)
 
 s3fs_files = ''
 for f in args.files:
     s3fs_files = s3fs_files+' '+f
 
-print('s3fs '+s3fs_args+' -o dbglevel=info')
-os.system('s3fs '+s3fs_args+' -o dbglevel=info')
+if args.list is not True:
+    print('s3fs '+s3fs_args+' -o dbglevel=info', file=sys.stderr)
+    os.system('s3fs '+s3fs_args+' -o dbglevel=info')
 
-os.chdir(tmpdir)
+    os.chdir(tmpdir)
 
 if args.create is True:
-    # print('tar -c -f "'+args.file+'" '+s3fs_files+verbosity)
+    print('tar -c -f "'+args.file+'" '+s3fs_files+verbosity, file=sys.stderr)
     os.system('tar -c -f "'+args.file+'" '+s3fs_files+verbosity)
 
 if args.extract is True:
-    # print('tar -x -f "'+args.file+'" '+s3fs_files+verbosity)
+    print('tar -x -f "'+args.file+'" '+s3fs_files+verbosity, file=sys.stderr)
     os.system('tar -x -f "'+args.file+'" '+s3fs_files+verbosity)
 
 if args.list is True:
-    # print('tar -t -f "'+args.file+'" '+s3fs_files+verbosity)
+    print('tar -t -f "'+args.file+'" '+s3fs_files+verbosity, file=sys.stderr)
     os.system('tar -t -f "'+args.file+'" '+s3fs_files+verbosity)
 
-# umount /root/S3
-os.chdir('/')
-os.system('umount '+tmpdir)
 
-os.rmdir(tmpdir)
+if args.list is not True:
+    os.chdir('/')
+    os.system('umount '+tmpdir)
+
+    os.rmdir(tmpdir)
