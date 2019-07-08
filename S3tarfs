@@ -4,6 +4,9 @@ import argparse
 import tempfile
 import os
 
+import s3tarfsrc
+print(s3tarfsrc.host)
+
 parser = argparse.ArgumentParser()
 group_action = parser.add_mutually_exclusive_group(required=True)
 group_action.add_argument("-c", "--create", action="store_true",
@@ -68,6 +71,8 @@ tmpdir = tempfile.mkdtemp()
 s3fs_args = ''+args.directory+' '+tmpdir+' '
 if args.host is not None:
     s3fs_args = s3fs_args+' -o url='+args.host
+elif s3tarfsrc.host is not None:
+    s3fs_args = s3fs_args+' -o url='+s3tarfsrc.host
 
 verbosity=''
 for i in range(args.verbose):
