@@ -6,7 +6,7 @@ import sys
 import os
 
 import s3tarfsrc
-print(s3tarfsrc.host, file=sys.stderr)
+# print(s3tarfsrc.host, file=sys.stderr)
 
 parser = argparse.ArgumentParser()
 group_action = parser.add_mutually_exclusive_group(required=True)
@@ -34,36 +34,46 @@ parser.add_argument("-C", "--directory",
                     help="bucket name in format bucket:/path")
 parser.add_argument("--totals", action="store_true",
                     help="print size of processed files")
-parser.add_argument("--listed-incremental",
+parser.add_argument("-g", "--listed-incremental",
                     help="list of files processed in previous backup, for incremental backups")
 parser.add_argument("--ignore-failed-read", action="store_true",
-                    help="ignore failed reads")
-parser.add_argument("--sparse", action="store_true",
+                    help="Do not fail on unreadable files")
+parser.add_argument("-S", "--sparse", action="store_true",
                     help="detect sparse files")
-parser.add_argument("--block-number", action="store_true",
+parser.add_argument("-R", "--block-number", action="store_true",
                     help="show block numbers with each message")
 parser.add_argument("--atime-preserve",
                     help="how to preserve atimes")
 parser.add_argument("--one-file-system", action="store_true",
                     help="ignored, for compability reasons")
+parser.add_argument("--numeric-owner", action="store_true",
+                    help="use ids not names for owner/group names")
+parser.add_argument("--ignore-zeros", action="store_true",
+                    help="")
+parser.add_argument("--wildcards", action="store_true",
+                    help="")
+parser.add_argument("-p", "--preserve_permissions", action="store_true",
+                    help="preserve permissions")
+parser.add_argument("-G", "--incremental", action="store_true",
+                    help="incremental backups")
 parser.add_argument("files", nargs='*',
                     help="Files to proccess")
 args = parser.parse_args()
 verbosity=args.verbose
-print(args.verbose, file=sys.stderr)
-print(args.file, file=sys.stderr)
-print(args.access_key, file=sys.stderr)
-print(args.secret_key, file=sys.stderr)
-print(args.host, file=sys.stderr)
-print(args.files_from, file=sys.stderr)
-print(args.files, file=sys.stderr)
+# print(args.verbose, file=sys.stderr)
+# print(args.file, file=sys.stderr)
+# print(args.access_key, file=sys.stderr)
+# print(args.secret_key, file=sys.stderr)
+# print(args.host, file=sys.stderr)
+# print(args.files_from, file=sys.stderr)
+# print(args.files, file=sys.stderr)
 
 if args.file is None:
     print("Not supported yet", file=sys.stderr)
     exit(1)
 
 tmpdir = tempfile.mkdtemp()
-print(tmpdir, file=sys.stderr)
+# print(tmpdir, file=sys.stderr)
 
 # s3fs s3fuse:/ /root/S3 -o passwd_file=/root/.passwd-s3fs
 
@@ -82,14 +92,14 @@ elif s3tarfsrc.host is not None:
 verbosity=''
 for i in range(args.verbose):
     verbosity = verbosity+' -v'
-print(verbosity, file=sys.stderr)
+# print(verbosity, file=sys.stderr)
 
 tar_files = ''
 for f in args.files:
     tar_files = tar_files+' '+f
 
 if args.list is not True:
-    print('s3fs '+s3fs_args+' -o dbglevel=info', file=sys.stderr)
+    # print('s3fs '+s3fs_args+' -o dbglevel=info', file=sys.stderr)
     os.system('s3fs '+s3fs_args+' -o dbglevel=info')
 
     os.chdir(tmpdir)
@@ -104,17 +114,32 @@ if args.totals is True:
     
 if args.listed_incremental is not None:
     tar_options = tar_options + '--listed-incremental '+args.listed_incremental
-    
+
+if args.sparse is True:
+    tar_options = tar_options + '--sparse '
+
+if args.numeric_owner is True:
+    tar_options = tar_options + '--numeric-owner '
+
+if args.ignore_zeros is True:
+    tar_options = tar_options + '--ignore-zeros '
+
+if args.wildcards is True:
+    tar_options = tar_options + '--wildcards '
+
+if args.incremental is True:
+    tar_options = tar_options + '--incremental '
+
 if args.create is True:
-    print('tar -c -f "'+args.file+'" '+verbosity+tar_options+tar_files, file=sys.stderr)
+    # print('tar -c -f "'+args.file+'" '+verbosity+tar_options+tar_files, file=sys.stderr)
     os.system('tar -c -f "'+args.file+'" '+verbosity+tar_options+tar_files)
 
 if args.extract is True:
-    print('tar -x -f "'+args.file+'" '+verbosity+tar_options+tar_files, file=sys.stderr)
+    # print('tar -x -f "'+args.file+'" '+verbosity+tar_options+tar_files, file=sys.stderr)
     os.system('tar -x -f "'+args.file+'" '+verbosity+tar_options+tar_files)
 
 if args.list is True:
-    print('tar -t -f "'+args.file+'" '+verbosity+tar_options+tar_files, file=sys.stderr)
+    # print('tar -t -f "'+args.file+'" '+verbosity+tar_options+tar_files, file=sys.stderr)
     os.system('tar -t -f "'+args.file+'" '+verbosity+tar_options+tar_files)
 
 
